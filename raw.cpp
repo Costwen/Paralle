@@ -59,7 +59,7 @@ using namespace std;
 
 struct BeginAndNum
 {
-    int begin=-1;
+    int begin = -1;
     unsigned num;
 };
 
@@ -81,7 +81,6 @@ BeginAndNum vtIndex[MAX_VT_NUM];
 
 char str[MAX_STRING_LENGTH];
 
-
 struct SubTree
 {
     int root;
@@ -101,7 +100,83 @@ int production2_num;
 int production1_num;
 int string_length;
 
-int main()
+inline void loop6(int j, int &k, int oldTreeNum, int &newTreeNum, int last, int curr)
+{
+    subTreeParent.root = production2[j].parent;
+    subTreeParent.num = subTreeChild1.num * subTreeChild2.num;
+    
+    while (k < oldTreeNum && subTreeParent.root > subTreeBuf[last][k].root)
+        subTreeBuf[curr][newTreeNum++] = subTreeBuf[last][k++];
+
+    if (k < oldTreeNum && subTreeParent.root == subTreeBuf[last][k].root)
+        subTreeParent.num += subTreeBuf[last][k++].num;
+    subTreeBuf[curr][newTreeNum++] = subTreeParent;
+}
+
+inline void loop5(int i1, int i2, int &last, int &curr, int len, int left, int right, int &oldTreeNum)
+{
+    subTreeChild2 = subTreeTable[right][left + len - 1][i2];
+    int begin = vnIndex[subTreeChild1.root][subTreeChild2.root].begin;
+    int end = begin + vnIndex[subTreeChild1.root][subTreeChild2.root].num;
+    if (begin == end)
+    {
+        return;
+    }
+    swap(last, curr);
+    int newTreeNum = 0;
+    int k = 0;
+    for (int j = begin; j < end; j++)
+    {
+        loop6(j, k, oldTreeNum, newTreeNum, last, curr);
+    }
+
+    while (k < oldTreeNum)
+    {
+        subTreeBuf[curr][newTreeNum++] = subTreeBuf[last][k++];
+        
+    }
+    oldTreeNum = newTreeNum;
+}
+
+inline void loop4(int len, int left, int right, int i1, int &last, int &curr, int &oldTreeNum)
+{
+    subTreeChild1 = subTreeTable[left][right - 1][i1];
+    for (int i2 = 0; i2 < subTreeNumTable[right][left + len - 1]; i2++)
+    {
+        loop5(i1, i2, last, curr, len, left, right, oldTreeNum);
+    }
+}
+
+inline void loop3(int len, int left, int right, int &last, int &curr, int &oldTreeNum)
+{
+    for (int i1 = 0; i1 < subTreeNumTable[left][right - 1]; i1++)
+    {
+        loop4(len, left, right, i1, last, curr, oldTreeNum);
+    }
+}
+inline void loop2(int len, int left, int &last, int &curr, int &oldTreeNum)
+{
+    for (int right = left + 1; right < left + len; right++)
+    {
+        loop3(len, left, right, last, curr, oldTreeNum);
+    }
+}
+inline void loop1(int len)
+{
+    for (int left = 0; left <= string_length - len; left++)
+    {
+        int curr = 0;
+        int last = 1;
+        int oldTreeNum = 0;
+        loop2(len, left, last, curr, oldTreeNum);
+        subTreeNumTable[left][left + len - 1] = oldTreeNum;
+        if (subTreeNumTable[left][left + len - 1] > 0)
+        {
+            memcpy(subTreeTable[left][left + len - 1], subTreeBuf[curr], subTreeNumTable[left][left + len - 1] * sizeof(SubTree));
+        }
+    }
+}
+int main(int argc, int **argv)
 {
     double start_time, end_time, init_time;
     init_time = start_time = clock();
@@ -116,18 +191,16 @@ int main()
     scanf("%d\n", &string_length);
     scanf("%s\n", str);
     end_time = clock();
-    
+
     printf("Input Time: %.3lf\n", (end_time - start_time) / CLOCKS_PER_SEC);
-    
+
     start_time = clock();
-    sort(production1, production1 + production1_num, [](const Production1& a, const Production1& b)
-    {
-        return a.child == b.child ? a.parent < b.parent : a.child < b.child;
-    });
+    sort(production1, production1 + production1_num, [](const Production1 &a, const Production1 &b)
+         { return a.child == b.child ? a.parent < b.parent : a.child < b.child; });
     end_time = clock();
 
     printf("Sort Time: %.3lf\n", (end_time - start_time) / CLOCKS_PER_SEC);
-    
+
     start_time = clock();
 
     for (int i = 0; i < production1_num; i++)
@@ -138,45 +211,40 @@ int main()
         ++vtIndex[t].num;
     }
     end_time = clock();
-    
+
     printf("Production1 Init Time: %.3lf\n", (end_time - start_time) / CLOCKS_PER_SEC);
-    
+
     start_time = clock();
-    int begin, end;
+    int begin, end, t;
     for (int i = 0; i < string_length; i++)
     {
-        int t = str[i];
+        t = str[i];
         begin = vtIndex[t].begin;
         end = begin + vtIndex[t].num;
         for (int j = begin; j < end; j++)
         {
-            SubTree subTree;
-            subTree.root = production1[j].parent;
-            subTree.num = 1;
-            subTreeTable[i][i][subTreeNumTable[i][i]++] = subTree;
+            subTreeTable[i][i][subTreeNumTable[i][i]].root = production1[j].parent;
+            subTreeTable[i][i][subTreeNumTable[i][i]].num = 1;
+            ++subTreeNumTable[i][i];
         }
     }
 
     end_time = clock();
-    
+
     printf("Production2 Init Time: %.3lf\n", (end_time - start_time) / CLOCKS_PER_SEC);
-    
+
     start_time = clock();
 
-    sort(production2, production2 + production2_num, [](const Production2& a, const Production2& b)
-    {
-        return a.child1 == b.child1 ?
-            (a.child2 == b.child2 ? a.parent < b.parent : a.child2 < b.child2)
-            : a.child1 < b.child1;
-    });
+    sort(production2, production2 + production2_num, [](const Production2 &a, const Production2 &b)
+         { return a.child1 == b.child1 ? (a.child2 == b.child2 ? a.parent < b.parent : a.child2 < b.child2)
+                                       : a.child1 < b.child1; });
     end_time = clock();
 
     printf("Sort Time: %.3lf\n", (end_time - start_time) / CLOCKS_PER_SEC);
-    
+
     start_time = clock();
     end_time = clock();
     printf("Init Time: %.3lf\n", (end_time - start_time) / CLOCKS_PER_SEC);
-
 
     start_time = clock();
 
@@ -195,54 +263,7 @@ int main()
     int curr, last, oldTreeNum, copy_len;
     for (len = 2; len <= string_length; len++)
     {
-        for (left = 0; left <= string_length - len; left++)
-        {
-            curr = 0;
-            last = 1;
-            oldTreeNum = 0;
-            for (right = left + 1; right < left + len; right++)
-            {
-                for (i1 = 0; i1 < subTreeNumTable[left][right - 1]; i1++)
-                {
-                    subTreeChild1 = subTreeTable[left][right - 1][i1];
-                    for (i2 = 0; i2 < subTreeNumTable[right][left + len - 1]; i2++)
-                    {
-                        subTreeChild2 = subTreeTable[right][left + len - 1][i2];
-                        begin = vnIndex[subTreeChild1.root][subTreeChild2.root].begin;
-                        end = begin + vnIndex[subTreeChild1.root][subTreeChild2.root].num;
-                        if (begin == end)
-                        {
-                            continue;
-                        }
-                        swap(last, curr);
-                        newTreeNum = 0;
-                        k = 0;
-                        for (j = begin; j < end; j++)
-                        {
-                            subTreeParent.root = production2[j].parent;
-                            subTreeParent.num = subTreeChild1.num * subTreeChild2.num;
-                            
-                            while (k < oldTreeNum && subTreeParent.root > subTreeBuf[last][k].root)
-                                subTreeBuf[curr][newTreeNum++] = subTreeBuf[last][k++];
-
-                            if (k < oldTreeNum && subTreeParent.root == subTreeBuf[last][k].root)
-                                subTreeParent.num += subTreeBuf[last][k++].num;
-                            subTreeBuf[curr][newTreeNum++] = subTreeParent;
-                        }
-
-                        while (k < oldTreeNum){
-                            subTreeBuf[curr][newTreeNum++] = subTreeBuf[last][k++];
-                        }
-                        oldTreeNum = newTreeNum;
-                    }
-                }
-            }
-            subTreeNumTable[left][left + len - 1] = oldTreeNum;
-            if (subTreeNumTable[left][left + len - 1] > 0)
-            {
-                memcpy(subTreeTable[left][left + len - 1], subTreeBuf[curr], subTreeNumTable[left][left + len - 1] * sizeof(SubTree));
-            }
-        }
+        loop1(len);
     }
     end_time = clock();
     printf("Production2 Time: %.3lf\n", (end_time - start_time) / CLOCKS_PER_SEC);
