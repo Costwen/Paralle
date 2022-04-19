@@ -142,7 +142,7 @@ int main()
     }
     for (int len = 2; len <= string_length; len++)
     {
-#pragma omp parallel for
+        #pragma omp parallel for
         for (int left = 0; left < string_length - len + 1; left++)
         {
             for (int right = left + 1; right < left + len; right++)
@@ -151,103 +151,12 @@ int main()
                 {
                     int A, B, begin, end, i, it2;
                     A = TableSize[left][right - 1][it1];
-                    for (it2 = 1; it2 <= TableSize[right][left + len - 1][0] - 3; it2 += 4)
+                    for (it2 = 1; it2 <= TableSize[right][left + len - 1][0]; it2++)
                     {
                         B = TableSize[right][left + len - 1][it2];
                         begin = vnIndex[A][B].begin;
                         end = begin + vnIndex[A][B].num;
-                        for (i = begin; i < end - 3; i += 4)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 1].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 2].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 3].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                        for (; i < end; i++)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-
-                        B = TableSize[right][left + len - 1][it2 + 1];
-                        begin = vnIndex[A][B].begin;
-                        end = begin + vnIndex[A][B].num;
-                        for (i = begin; i < end - 3; i += 4)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 1].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 2].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 3].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                        for (; i < end; i++)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                        B = TableSize[right][left + len - 1][it2 + 2];
-                        begin = vnIndex[A][B].begin;
-                        end = begin + vnIndex[A][B].num;
-                        for (i = begin; i < end - 3; i += 4)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 1].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 2].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 3].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                        for (; i < end; i++)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                        B = TableSize[right][left + len - 1][it2 + 3];
-                        begin = vnIndex[A][B].begin;
-                        end = begin + vnIndex[A][B].num;
-                        for (i = begin; i < end - 3; i += 4)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 1].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 2].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 3].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                        for (; i < end; i++)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                    }
-                    for (; it2 <= TableSize[right][left + len - 1][0]; it2++)
-                    {
-                        B = TableSize[right][left + len - 1][it2];
-                        begin = vnIndex[A][B].begin;
-                        end = begin + vnIndex[A][B].num;
-                        for (i = begin; i < end - 3; i += 4)
-                        {
-                            subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
-                            subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 1].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 1].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 2].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 2].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i + 3].parent;
-                            subTreeTable[left][left + len - 1][production2[i + 3].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
-                        }
-                        for (; i < end; i++)
+                        for (i = begin; i < end; i++)
                         {
                             subTreeTable[left][left + len - 1][production2[i].parent] ? 0 : TableSize[left][left + len - 1][++TableSize[left][left + len - 1][0]] = production2[i].parent;
                             subTreeTable[left][left + len - 1][production2[i].parent] += subTreeTable[left][right - 1][A] * subTreeTable[right][left + len - 1][B];
